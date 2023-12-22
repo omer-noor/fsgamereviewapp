@@ -1,7 +1,7 @@
 import AuthContext from './auth/authContext'
 import HorizontalCard from './components/horizontal-card/card'
 import Search from './components/search/search'
-import SearchContainer from './components/search/search-contaniner'
+import SearchContainer from './components/search/page'
 import Header from './header/header'
 
 export default function Home() {

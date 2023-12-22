@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardBody, Image, Button, Slider } from "@nextui-org/react";
 import { HeartIcon } from "./heart-icon";
-import { getGameByID } from "@/app/components/horizontal-card/page";
+import { getGameByID } from "@/app/components/search/search-result";
 import { stringify } from "querystring";
 import { deserialize } from "v8";
 import { Game } from "@/app/components/horizontal-card/interfaces";
