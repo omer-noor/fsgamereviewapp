@@ -1,39 +1,90 @@
-import { getUserById } from "./userProvider"
-export default async function Page() {
-    const imageURL = "../favicon.ico"
-    const user = await getUserById(1);
+import apicalypse from 'apicalypse';
+import React from "react";
+import { Card, CardBody, Image, Button, Slider } from "@nextui-org/react";
+import { deserialize } from "v8";
+import { Cover, Game } from "@/app/components/horizontal-card/interfaces";
+import { Prisma } from '@prisma/client';
+
+export default async function page() {
+
+    const getUsers = async () => {
+        try {
+            const users = await fetch(process.env.BASE_URL + '/api/users/getAllUsers', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            return users.json();
+        }
+        catch (error) {
+            console.log(error)
+            return JSON.stringify("Users not found")
+        }
+    }
+    const users: Prisma.UserCreateInput[] = await getUsers()
+
+
     return (
-        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <div className="flex justify-end px-4 pt-4">
-                <button id="dropdownButton" data-dropdown-toggle="dropdown" className="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
-                    <span className="sr-only">Open dropdown</span>
-                    <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
-                        <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
-                    </svg>
-                </button>
-                <div id="dropdown" className="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-                    <ul className="py-2" aria-labelledby="dropdownButton">
-                        <li>
-                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
-                        </li>
-                        <li>
-                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Export Data</a>
-                        </li>
-                        <li>
-                            <a href="#" className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div className="flex flex-col items-center pb-10">
-                <img className="w-24 h-24 mb-3 rounded-full shadow-lg" src={imageURL} alt="Bonnie image" />
-                <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{user?.name}</h5>
-                <span className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</span>
-                <div className="flex mt-4 md:mt-6">
-                    <a href="#" className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add friend</a>
-                    <a href="#" className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700 ms-3">Message</a>
-                </div>
-            </div>
-        </div>
-    )
+        <>
+            {users.map((user: Prisma.UserCreateInput, id: any) => (
+                <Card
+                    isBlurred
+                    className="border-none bg-background/60 dark:bg-slate-500"
+                    shadow="sm"
+                >
+                    <CardBody>
+                        <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
+                            <div className="relative col-span-6 md:col-span-4">
+                                <Image
+                                    alt="Album cover"
+                                    className="object-cover"
+                                    height={200}
+                                    shadow="md"
+                                    src={`https://images.igdb.com/igdb/image/upload/t_cover_big.jpg`}
+                                    width="100%"
+                                />
+                            </div>
+
+                            <div className="flex flex-col col-span-6 md:col-span-8">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex flex-col gap-0">
+                                        <h1 className="text-large font-medium mt-2">{user.name}</h1>
+                                        <h3 className="font-semibold text-foreground/90">Released: {user.email}</h3>
+                                        <p className="text-small text-foreground/80">{user.username}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex w-full">
+                                    <Button
+                                        isIconOnly
+                                        className="data-[hover]:bg-foreground/10"
+                                        radius="full"
+                                        variant="light"
+                                    >
+                                        Hello
+                                    </Button>
+                                    <Button
+                                        isIconOnly
+                                        className="data-[hover]:bg-foreground/10"
+                                        radius="full"
+                                        variant="light"
+                                    >
+                                        Hello
+                                    </Button>
+                                    <Button
+                                        isIconOnly
+                                        className="data-[hover]:bg-foreground/10"
+                                        radius="full"
+                                        variant="light"
+                                    >
+                                        Hello
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </CardBody>
+                </Card>
+            ))}
+        </>)
 }

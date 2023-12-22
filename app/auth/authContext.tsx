@@ -8,20 +8,21 @@ interface Props {
   children?: ReactNode
 }
 
-interface AuthContextType{
+interface AuthContextType {
   user: UserInfo | null;
 }
 
 export const AuthContext = createContext<AuthContextType>({ user: null });
 
 const AuthProvider = ({ children }: Props) => {
-  const [currentUser, setCurrentUser] = useState<UserInfo|null>(null);
-  
+  const [currentUser, setCurrentUser] = useState<UserInfo | null>(null);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in
         setCurrentUser(user);
+        console.log(user)
       } else {
         // User is signed out
         setCurrentUser(null);
@@ -33,11 +34,7 @@ const AuthProvider = ({ children }: Props) => {
   }, []);
 
   return (
-    <html>
-      <body>
-        <AuthContext.Provider value={{ user: currentUser }}>{children}</AuthContext.Provider>
-      </body>
-    </html>
+    <AuthContext.Provider value={{ user: currentUser }}>{children}</AuthContext.Provider>
   )
 }
 
