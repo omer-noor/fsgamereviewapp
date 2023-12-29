@@ -44,6 +44,7 @@ export interface Game {
     language_supports: number[]
     game_localizations: number[]
     collections: number[]
+    CoverObject?: Cover;
 }
 
 export interface Cover {

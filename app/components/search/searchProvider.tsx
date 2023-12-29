@@ -1,15 +1,16 @@
 'use client';
 import React from "react";
-import {Input} from "@nextui-org/react";
+import { Input } from "@nextui-org/react";
 import { SearchIcon } from "./search-icon";
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import { useDebouncedCallback } from 'use-debounce';
 
-export default function Search() {
+export default function searchProvider() {
   const searchParams = useSearchParams();
   const pathName = usePathname();
-  const {replace} = useRouter();
+  const { replace } = useRouter();
 
-  function handleSearch(term: string){
+  const handleSearch = useDebouncedCallback((term) =>  {
     const params = new URLSearchParams(searchParams);
     if (term) {
       params.set('query', term);
@@ -17,10 +18,10 @@ export default function Search() {
       params.delete('query');
     }
     replace(`${pathName}?${params.toString()}`);
-  }
+  }, 500)
 
   return (
-    <div className="bg-slate-500 px-8 rounded-2xl flex justify-center items-center text-white shadow-lg">
+    <div className="px-8 rounded-2xl flex justify-center items-center text-white shadow-lg">
       <Input
         label="Search for games"
         isClearable
@@ -52,8 +53,7 @@ export default function Search() {
         }
         onChange={(e) => {
           handleSearch(e.target.value);
-        }
-        }
+        }}
         defaultValue={searchParams.get('query')?.toString()}
       />
     </div>

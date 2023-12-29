@@ -18,7 +18,8 @@
     "next": "14.0.4",
     "react": "^18",
     "react-dom": "^18",
-    "reflect-metadata": "^0.2.1"
+    "reflect-metadata": "^0.2.1",
+    "use-debounce": "^10.0.0"
   },
   "devDependencies": {
     "@types/apicalypse": "^0.1.5",

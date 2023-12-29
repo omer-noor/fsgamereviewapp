@@ -7,7 +7,7 @@ import { Cover, Game } from "@/app/components/horizontal-card/interfaces";
 
 export async function getGamesBySearch(searchTerm: string): Promise<Game[] | null> {
   try {
-    console.log(searchTerm)
+    //console.log(searchTerm)
     const response = await apicalypse({
       queryMethod: 'body',
       method: 'POST',
@@ -18,7 +18,7 @@ export async function getGamesBySearch(searchTerm: string): Promise<Game[] | nul
       }
     })
       .fields('*') // Fetches all fields. You might want to specify only the fields you need.
-      .search(`${searchTerm}`) 
+      .search(`${searchTerm}`)
       .limit(10)// Use the search term
       .request('https://api.igdb.com/v4/games'); // Execute the query and return a response object
     return await response.data as Promise<Array<Game> | null>;
@@ -28,9 +28,7 @@ export async function getGamesBySearch(searchTerm: string): Promise<Game[] | nul
   }
 }
 
-export async function getCoverArtByGameID(ID: number): Promise<Cover | null> {
-  console.log("Here");
-
+export async function getCoverArtByGameID(ID: number): Promise<Cover | undefined> { 
   try {
     const response = await apicalypse({
       queryMethod: 'body',
@@ -44,7 +42,10 @@ export async function getCoverArtByGameID(ID: number): Promise<Cover | null> {
       .fields('*') // Fetches all fields. You might want to specify only the fields you need.
       .where(`game=${ID}`) // Use the dynamic gameId
       .request('https://api.igdb.com/v4/covers'); // Execute the query and return a response object
-    return await JSON.parse(response.data[0]) as Promise<Cover | null>;
+    const covers = await response.data;    
+    console.log(`COVERS ${covers[0]}`);
+    return covers[0]; // Return the URL of the cover
+    
   } catch (error) {
     console.error('Error fetching game data:', error);
     throw error; // or return null, depending on how you want to handle errors
@@ -53,19 +54,22 @@ export async function getCoverArtByGameID(ID: number): Promise<Cover | null> {
 
 export default async function HorizontalCard({
   query,
-  }: {
-  query: string; 
+}: {
+  query: any;
 }) {
-  console.log(query)
-  const game = await getGamesBySearch(query);  
-  if (game != undefined && game.length > 0) {
-    const gamesArray: Array<Game> = game || [];
+  const games = await getGamesBySearch(query.query);
+  if (games && games.length > 0) {
+    const gamesWithCovers = await Promise.all(games.map(async (game) => {
+      const coverObject = await getCoverArtByGameID(game.id);
+      return { ...game, CoverObject: coverObject }; // Update game object with cover URL
+    }));
+    console.log(gamesWithCovers)
     return (
       <>
-        {gamesArray.map((game: Game, id: any) => (
+        {gamesWithCovers.map((game: Game, id: any) => (
           <Card
             isBlurred
-            className="border-none bg-background/60 dark:bg-slate-500"
+            className="border-none dark:bg-zinc-900"
             shadow="sm"
           >
             <CardBody>
@@ -76,7 +80,8 @@ export default async function HorizontalCard({
                     className="object-cover"
                     height={200}
                     shadow="md"
-                    src={`https://images.igdb.com/igdb/image/upload/t_cover_big.jpg`}
+                    src={game.CoverObject?.url || ''}
+
                     width="100%"
                   />
                 </div>

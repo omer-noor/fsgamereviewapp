@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     
     <html lang="en">      
-      <body className={`${inter.className} antialiased dark bg-background`}>
+      <body className={`${inter.className} antialiased dark bg-background max-h-full overflow-hidden`}>
         <Header/>
         <AuthProvider>
         <ThemeProvider>
